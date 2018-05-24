@@ -175,16 +175,16 @@ void displayTemperature(){
   
   select(1);
   echo(digit[temp/10]);
-  delayMicroseconds(delayInMs);
+  delayMicroseconds(delayInMs/1.5);
   reset();
   
   select(2);
   echo(digit[temp%10]); 
-  delayMicroseconds(delayInMs);
+  delayMicroseconds(delayInMs/1.5);
   reset();
 
   displayC();
-  delayMicroseconds(delayInMs);
+  delayMicroseconds(delayInMs/1.5);
   reset();
   
   
