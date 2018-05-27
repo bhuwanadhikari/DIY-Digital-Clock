@@ -32,6 +32,7 @@
  long int light;
  int reading;
  long int limit=500;
+ int hourFixer;
  
  int h, m, s;
 
@@ -49,19 +50,46 @@ void setup() {
    }
   pinMode(tempPin, INPUT); // to LM 35
   pinMode(lightPin, INPUT); // to LDR
-   int taketempque = 0;
 }
 
 
 
 //LOOP LOOP  ----------------------------------------------
 void loop() {
-   DateTime now = rtc.now();
+     DateTime now = rtc.now();
    h = now.hour();
    m = now.minute();
    s = now.second();
-   operate();
+   sense();
+   if(s==8 || s==38){
+      temp = analogRead(tempPin);
+      temp = (5.0*temp*1000.0)/(1023*10);
+      temp = temp/1.45;
+    }
+  if(s ==9 || s==10 || s ==11 || s ==39 || s==40 || s ==41){
+    
+ 
+    autoSetDivider();
+    select(1);
+    echo(digit[(temp/10)%10]);
+      delayMicroseconds(delayInMs/1.5);
+    reset();
+
+    select(2);
+    echo(digit[temp%10]);
+      delayMicroseconds(delayInMs/1.5);
+    reset();
+
+    displayC();
+      delayMicroseconds(delayInMs/1.5);
+    reset();
+  } else {
+    displayTime();
+  }
+
 }
+  
+
 
 
 //HELPER FUNCTIONS-----------------------------------------
@@ -152,22 +180,7 @@ void autoSetDivider(){
 
 //------------------------------------------
 
-void operate(){
-  sense();
-  
-  if(s%60 == 7){
-      reading = analogRead(tempPin);
-      temp = (5.00*reading*1000.00/(1023*10));
-      temp = temp*1.35;
-  }
-      
-  if (s%15 > 7 && s%15 < 11){
-    displayTemperature();
-  }else{
-    displayTime();
-  }
-  
-}
+
 //------------------------------------------
 void displayTemperature(){
   
@@ -221,18 +234,32 @@ void displayTemperature(){
   echo(digit[m/10]);
   delayMicroseconds(delayInMs);
   reset();
-  
-  select(2);
-  echo(digit[(h%12)%10]);
-  delayMicroseconds(delayInMs);
-  reset();
-  
-  select(1);
-  echo(digit[(h%12)/10]);
-  delayMicroseconds(delayInMs);
-  reset();
 
- }
+  if(h==12 || h==00){
+    
+    select(2);
+    echo(digit[2]);
+    delayMicroseconds(delayInMs);
+    reset();
+  
+    select(1);
+    echo(digit[1]);
+    delayMicroseconds(delayInMs);
+    reset();
+  
+  } else{
+    select(2);
+    echo(digit[(h%12)%10]);
+    delayMicroseconds(delayInMs);
+    reset();
+  
+    select(1);
+    echo(digit[(h%12)/10]);
+    delayMicroseconds(delayInMs);
+    reset();
+
+  }
+  }
 //-----------------------------------------
 
 
