@@ -41,7 +41,7 @@ void loop() {
   }
   select(1);
   echo(digit[temp/1000]);
-  delay(4);
+  delay(4); 
   reset();
 
   select(2);

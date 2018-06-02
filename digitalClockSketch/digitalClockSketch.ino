@@ -56,10 +56,15 @@ void setup() {
 
 //LOOP LOOP  ----------------------------------------------
 void loop() {
-     DateTime now = rtc.now();
+   DateTime now = rtc.now();
    h = now.hour();
    m = now.minute();
    s = now.second();
+
+  if((h==11 || h==23) && s ==11 && m == 15){
+   adjustTime();
+  }
+   
    sense();
    if(s==8 || s==38){
       temp = analogRead(tempPin);
@@ -84,9 +89,8 @@ void loop() {
       delayMicroseconds(delayInMs/1.5);
     reset();
   } else {
-    displayTime();
+   displayTime();
   }
-
 }
   
 
@@ -261,6 +265,10 @@ void displayTemperature(){
   }
   }
 //-----------------------------------------
+void adjustTime(){
+  DateTime dt(2018, 06, 02, h, m, s-13, 5); // year, month, day, hour in 24, minute, sec, week day from ) to 7
+  rtc.setDateTime(dt); //Adjust date-time as defined 'dt' above
+  }
 
 
 
