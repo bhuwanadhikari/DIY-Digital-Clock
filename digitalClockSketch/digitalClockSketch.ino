@@ -28,7 +28,7 @@
  
  unsigned long int delayInMs;
  
- int temp;
+ int temp, adjustChecker;
  long int light;
  int reading;
  long int limit=500;
@@ -61,12 +61,18 @@ void loop() {
    m = now.minute();
    s = now.second();
 
-  if((h==11 || h==23) && s ==11 && m == 15){
+  if((h==11 || h==23) && s ==35 && m == 15 && adjustChecker == 1){
    adjustTime();
+   adjustChecker = 0;
+  }
+
+  if((h==11 || h==23) && s ==35 && m == 12){
+    adjustChecker = 1;
   }
    
    sense();
    if(s==8 || s==38){
+    
       temp = analogRead(tempPin);
       temp = (5.0*temp*1000.0)/(1023*10);
       temp = temp/1.45;
