@@ -4,6 +4,7 @@
 #define DOWN  7
 #define DIVIDER 13  
 int led[7] = {6, 5, 4, 3, 2, 1, 0}; // serially a, b, c, d, e, f, g
+int delayInMs = 3000;
   
 int selector[4] = {9, 10, 11, 12}; // four digit selectors: first, second, third, fourth
 int digit[10][7] = {    {1, 1, 1, 1, 1, 1, 0},
@@ -21,7 +22,7 @@ int digit[10][7] = {    {1, 1, 1, 1, 1, 1, 0},
 int tempPin = A2;
 int lightPin = A3;
 int outPin = A1;
-int temp;
+int temp, light;
 
 void setup() {
   for (int i = 0; i<= 13; i++){
@@ -39,25 +40,22 @@ void loop() {
     temp = analogRead(tempPin);
     temp = (5.0*temp*1000.0)/(1023*10);
   }
-  select(1);
-  echo(digit[temp/1000]);
-  delay(4); 
-  reset();
 
-  select(2);
-  echo(digit[(temp/100)%10]);
-  delay(4);
-  reset();
+    autoSetDivider();
+    select(1);
+    echo(digit[(temp/10)%10]);
+      delayMicroseconds(delayInMs/1.5);
+    reset();
 
-  select(3);
-  echo(digit[(temp/10)%10]);
-  delay(4);
-  reset();
+    select(2);
+    echo(digit[temp%10]);
+      delayMicroseconds(delayInMs/1.5);
+    reset();
 
-  select(4);
-  echo(digit[temp%10]);
-  delay(4);
-  reset();
+    displayC();
+      delayMicroseconds(delayInMs/1.5);
+    reset();
+
 
 }
 
@@ -103,4 +101,26 @@ void select(int x){
       low(i);
     }
   }
-
+//-------------------------------------------------
+void autoSetDivider(){
+    high(DIVIDER);
+    high(UP);
+    low(DOWN);
+    delayMicroseconds(delayInMs);
+    low(DIVIDER);
+    low(UP);
+    low(DOWN);
+}
+//-------------------------------------------------
+  void displayC(){
+    select(3);
+    high(led[0]);
+    low(led[1]);
+    low(led[2]);
+    high(led[3]);
+    high(led[4]);
+    high(led[5]);
+    low(led[6]);
+    delayMicroseconds(delayInMs);
+    reset();
+  }

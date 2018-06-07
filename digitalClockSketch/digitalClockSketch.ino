@@ -28,9 +28,10 @@
  
  unsigned long int delayInMs;
  
- int temp, adjustChecker;
+ int temp; 
  long int light;
  int reading;
+ bool tempChecker = false, adjustChecker = false;
  long int limit=500;
  int hourFixer;
  
@@ -60,45 +61,39 @@ void loop() {
    h = now.hour();
    m = now.minute();
    s = now.second();
-
-  if((h==11 || h==23) && s ==35 && m == 15 && adjustChecker == 1){
-   adjustTime();
-   adjustChecker = 0;
-  }
-
-  if((h==11 || h==23) && s ==35 && m == 12){
-    adjustChecker = 1;
-  }
    
-   sense();
+  if((h%12==11) && m == 14 && s ==35){
+    adjustChecker = true;
+  }
+  
+  if(m == 15 && s ==35 && adjustChecker==true){
+   adjustTime();
+   adjustChecker = false;
+  }
+
+  
    if(s==8 || s==38){
-    
+    tempChecker = true;
+   }
+
+  
+   if(tempChecker == false){
+      sense();
+   }
+   if(tempChecker==true){
       temp = analogRead(tempPin);
       temp = (5.0*temp*1000.0)/(1023*10);
-      temp = temp/1.45;
-    }
-  if(s ==9 || s==10 || s ==11 || s ==39 || s==40 || s ==41){
-    
- 
-    autoSetDivider();
-    select(1);
-    echo(digit[(temp/10)%10]);
-      delayMicroseconds(delayInMs/1.5);
-    reset();
-
-    select(2);
-    echo(digit[temp%10]);
-      delayMicroseconds(delayInMs/1.5);
-    reset();
-
-    displayC();
-      delayMicroseconds(delayInMs/1.5);
-    reset();
+      tempChecker = false;
+      }
+      
+  if(s ==9 || s==10 || s ==11 || s ==39 || s==40 || s ==41){ 
+    displayTemperature();
   } else {
-   displayTime();
+    displayTime();
   }
 }
   
+
 
 
 
@@ -155,7 +150,8 @@ void sense(){
 }
 //------------------------------------------
 void autoBlinkDivider( ){
-  if(millis()%1000 <= 500){
+  if(millis()%1000 <= 5
+  00){
     if(light < limit){
       high(DIVIDER);
       high(UP);
@@ -170,7 +166,7 @@ void autoBlinkDivider( ){
       high(DOWN);
     }
     
-  }else{
+  } else{
     low(DIVIDER);
     low(UP);
     low(DOWN);
